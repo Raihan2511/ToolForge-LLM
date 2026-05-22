@@ -1,0 +1,46 @@
+{#-
+  Jinja2 Chat Template for fine-tuned Qwen 2.5 7B (APIGen / xLAM format)
+  -----------------------------------------------------------------------
+  Translates standard OpenAI Chat Completion API messages into the exact
+  token sequence the model was trained on.
+
+  vLLM feeds this template two variables:
+    - messages : list[dict]  (role / content)
+    - tools    : list[dict] | None  (OpenAI-format tool definitions)
+-#}
+{%- set format_instruction = 'Output MUST be a JSON object with a "tool_calls" key. No other text.\nIf no call is needed, set tool_calls to an empty list.\nExample:\n{"tool_calls": [{"name": "func_name", "arguments": {"arg1": "val1"}}]}' -%}
+
+{%- if tools is defined and tools is not none and tools | length > 0 -%}
+{%- set tools_json = tools | tojson(indent=2) -%}
+{%- else -%}
+{%- set tools_json = '[]' -%}
+{%- endif -%}
+
+{%- for message in messages -%}
+{%- if not loop.first %}
+{% endif -%}
+{%- if message['role'] == 'system' -%}
+<|im_start|>system
+[BEGIN OF TASK INSTRUCTION]
+{{ message['content'] }}
+[END OF TASK INSTRUCTION]
+
+[BEGIN OF AVAILABLE TOOLS]
+{{ tools_json }}
+[END OF AVAILABLE TOOLS]
+
+[BEGIN OF FORMAT INSTRUCTION]
+{{ format_instruction }}
+[END OF FORMAT INSTRUCTION]<|im_end|>
+{%- elif message['role'] == 'user' -%}
+<|im_start|>user
+{{ message['content'] }}<|im_end|>
+{%- elif message['role'] == 'assistant' -%}
+<|im_start|>assistant
+{{ message['content'] }}<|im_end|>
+{%- endif -%}
+{%- endfor -%}
+
+{%- if add_generation_prompt is defined and add_generation_prompt %}
+<|im_start|>assistant
+{% endif -%}

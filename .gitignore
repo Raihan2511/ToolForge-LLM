@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment Variables
+.env
+.env.*
+
+# Notebooks
+.ipynb_checkpoints/
+
+# ToolForge Training Artifacts
+training/logs/
+training/outputs/
+training/runs/
+training/unsloth_compiled_cache/
+training/merged/
+*.gguf
+
+# Data files (often too large for Git)
+*.jsonl
+*.csv
+*.pt
+*.safetensors
+*.bin
+
+# OS specific
+.DS_Store
+Thumbs.db
