@@ -25,12 +25,12 @@ from openai import OpenAI
 
 # --------------- Configuration ---------------
 
-VLLM_BASE_URL: str = os.getenv("VLLM_BASE_URL", "https://crafts-briefs-stockings-identified.trycloudflare.com/v1")
+VLLM_BASE_URL: str = os.getenv("VLLM_BASE_URL", "https://jackie-instantly-musician-styles.trycloudflare.com/v1")
 MODEL_NAME: str = os.getenv("VLLM_MODEL_NAME", "qwen-tools")
 
 # --------------- System Prompt ---------------
 
-_SYSTEM_PROMPT_PATH = Path(__file__).resolve().parent.parent / "system_prompt.txt"
+_SYSTEM_PROMPT_PATH = Path(__file__).resolve().parent.parent.parent / "deployment" / "system_prompt.txt"
 
 
 def load_system_prompt() -> str:
@@ -110,16 +110,19 @@ TOOLS: list[dict] = [
 def build_payload(
     system_prompt: str,
     user_input: str,
+    tools: list = None,
 ) -> dict:
     """Return the complete JSON-serialisable request body."""
-    return {
+    payload = {
         "model": MODEL_NAME,
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_input},
         ],
-        "tools": TOOLS,
     }
+    if tools:
+        payload["tools"] = tools
+    return payload
 
 
 # --------------- Response Parsing ---------------
@@ -302,7 +305,7 @@ def interactive_loop() -> None:
     client = OpenAI(base_url=VLLM_BASE_URL, api_key="not-needed")
 
     print("=" * 60)
-    print("  CHAT CLIENT -- Interactive Mode")
+    print("  CHAT CLIENT -- Chit-Chat Mode")
     print("=" * 60)
     print(f"  Base URL : {VLLM_BASE_URL}")
     print(f"  Model    : {MODEL_NAME}")
@@ -322,7 +325,9 @@ def interactive_loop() -> None:
             print("\nGoodbye!")
             break
 
-        payload = build_payload(system_prompt, user_input)
+        # To test chitchat, we pass tools=None. To test tools, pass tools=TOOLS.
+        # Let's default to no tools so you can test your "hi" message right now!
+        payload = build_payload(system_prompt, user_input, tools=None)
 
         try:
             response = client.chat.completions.create(**payload)

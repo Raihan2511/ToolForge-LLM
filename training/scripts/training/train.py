@@ -35,7 +35,7 @@ import shutil
 from pathlib import Path
 
 # Add src/ to path so `from dataset import ...` resolves correctly
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 import torch
 from unsloth import FastLanguageModel, is_bfloat16_supported

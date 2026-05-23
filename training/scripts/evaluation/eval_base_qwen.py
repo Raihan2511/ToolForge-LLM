@@ -94,14 +94,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--dataset_path",
         type=str,
-        default="data/val.jsonl",
+        default="../../data/val.jsonl",
         help="Path to the JSONL evaluation dataset (default: data/val.jsonl).",
     )
     parser.add_argument(
         "--output_dir",
         type=str,
         # ── KEY CHANGE: Output to a separate directory for base model results ──
-        default="outputs/eval_base",
+        default="../../outputs/eval_base",
         help="Directory to save detailed results JSON (default: outputs/eval_base).",
     )
     parser.add_argument(

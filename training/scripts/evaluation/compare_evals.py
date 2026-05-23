@@ -52,7 +52,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--base_results",
         type=str,
-        default="outputs/eval_base/eval_results.json",
+        default="../../outputs/eval_base/eval_results.json",
         help=(
             "Path to base model eval_results.json "
             "(default: outputs/eval_base/eval_results.json)."
@@ -61,7 +61,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--ft_results",
         type=str,
-        default="outputs/eval_latest/eval_results.json",
+        default="../../outputs/eval_latest/eval_results.json",
         help=(
             "Path to fine-tuned model eval_results.json "
             "(default: outputs/eval_latest/eval_results.json)."

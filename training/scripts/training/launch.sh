@@ -8,13 +8,13 @@
 
 set -e
 
-CONFIG=${1:-"configs/qwen7b_unsloth.yaml"}
+CONFIG=${1:-"../../configs/qwen7b_unsloth.yaml"}
 
 # ── Validate config ───────────────────────────────────────────────────────────
 if [ ! -f "$CONFIG" ]; then
     echo "❌ Config not found: $CONFIG"
     echo "Available configs:"
-    ls configs/*.yaml 2>/dev/null || echo "  (none)"
+    ls ../../configs/*.yaml 2>/dev/null || echo "  (none)"
     exit 1
 fi
 
@@ -82,7 +82,7 @@ echo "TensorBoard running at :6006 (PID $TB_PID)"
 # ── Train ─────────────────────────────────────────────────────────────────────
 # Use screen so training survives SSH disconnects.
 # FIX: explicitly pass the resolved config, then slice array to pass the rest of the arguments
-python scripts/train.py "$CONFIG" "${@:2}" 2>&1 | tee "$LOG_FILE"
+python train.py "$CONFIG" "${@:2}" 2>&1 | tee "$LOG_FILE"
 EXIT_CODE=${PIPESTATUS[0]}
 
 kill $TB_PID 2>/dev/null || true
@@ -92,8 +92,8 @@ if [ $EXIT_CODE -eq 0 ]; then
     echo "✅ Training complete!"
     echo ""
     echo "Next steps:"
-    echo "  1. Test  : python scripts/evaluate.py --adapter_path $OUTPUT_DIR/final_adapter"
-    echo "  2. Merge : python scripts/merge_and_save.py --adapter_path $OUTPUT_DIR/final_adapter --output_dir /workspace/training/merged"
+    echo "  1. Test  : python ../evaluation/evaluation_latest.py --adapter_path $OUTPUT_DIR/final_adapter"
+    echo "  2. Merge : python merge_and_save.py --adapter_path $OUTPUT_DIR/final_adapter --output_dir /workspace/training/merged"
 else
     echo "❌ Training exited with code $EXIT_CODE — check $LOG_FILE"
 fi

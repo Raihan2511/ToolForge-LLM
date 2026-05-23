@@ -8,7 +8,7 @@ set -euo pipefail
 
 # ── Paths (adjust if your layout differs) ──
 # Typical RunPod environment puts everything in /workspace
-MODEL_DIR="./merged"
+MODEL_DIR="../merged"
 CHAT_TEMPLATE="./template.jinja"
 
 # ── Verify paths exist ──

@@ -85,13 +85,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--dataset_path",
         type=str,
-        default="data/val.jsonl",
+        default="../../data/val.jsonl",
         help="Path to the JSONL evaluation dataset (default: data/val.jsonl).",
     )
     parser.add_argument(
         "--output_dir",
         type=str,
-        default="outputs/eval_latest",
+        default="../../outputs/eval_latest",
         help="Directory to save detailed results JSON (default: outputs/eval_latest).",
     )
     parser.add_argument(
