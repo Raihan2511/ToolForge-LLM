@@ -79,10 +79,10 @@ print(f'  BF16 supported      : {torch.cuda.is_bf16_supported()}')
 "
 
 # ── 7. Create working directories ─────────────────────────────────────────────
-mkdir -p /workspace/training/data
-mkdir -p /workspace/training/runs
-mkdir -p /workspace/training/logs
-mkdir -p /workspace/training/merged
+mkdir -p ./data
+mkdir -p ./runs
+mkdir -p ./logs
+mkdir -p ./merged
 
 echo ""
 echo "============================================"

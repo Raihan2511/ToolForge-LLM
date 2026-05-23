@@ -8,8 +8,8 @@ set -euo pipefail
 
 # ── Paths (adjust if your layout differs) ──
 # Typical RunPod environment puts everything in /workspace
-MODEL_DIR="/workspace/training/merged"
-CHAT_TEMPLATE="/workspace/training/template.jinja"
+MODEL_DIR="./merged"
+CHAT_TEMPLATE="./template.jinja"
 
 # ── Verify paths exist ──
 if [ ! -d "$MODEL_DIR" ]; then
@@ -37,5 +37,6 @@ python -m vllm.entrypoints.openai.api_server \
     --gpu-memory-utilization 0.90 \
     --dtype              auto \
     --trust-remote-code \
-    --disable-log-requests \
+    --enable-auto-tool-choice \
+    --tool-call-parser xlam \
     "$@"

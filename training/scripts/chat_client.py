@@ -25,7 +25,7 @@ from openai import OpenAI
 
 # --------------- Configuration ---------------
 
-VLLM_BASE_URL: str = os.getenv("VLLM_BASE_URL", "http://localhost:8000/v1")
+VLLM_BASE_URL: str = os.getenv("VLLM_BASE_URL", "https://crafts-briefs-stockings-identified.trycloudflare.com/v1")
 MODEL_NAME: str = os.getenv("VLLM_MODEL_NAME", "qwen-tools")
 
 # --------------- System Prompt ---------------
