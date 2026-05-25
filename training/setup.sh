@@ -55,7 +55,8 @@ pip install -q \
     "protobuf" \
     "tensorboard" \
     "pyyaml" \
-    "huggingface_hub"
+    "huggingface_hub" \
+    "wandb"
 
 # ---> FIX INSERTED HERE: Remove conflicting torchao package <---
 pip uninstall -y torchao || true

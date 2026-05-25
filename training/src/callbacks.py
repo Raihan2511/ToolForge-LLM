@@ -208,6 +208,25 @@ class FormatCollapseCallback(TrainerCallback):
             f"conv_plain={conv_rate:.0%} ({conv_ok}/{conv_total})"
         )
 
+        # Log our custom routing metrics to wandb if it is active!
+        if args.report_to and "wandb" in args.report_to:
+            import wandb
+            if wandb.run is not None:
+                wandb.log({
+                    "eval/tool_json_validity": tool_rate,
+                    "eval/conv_routing_accuracy": conv_rate,
+                }, step=state.global_step)
+        
+        # Save locally for matplotlib plotting
+        import os
+        metrics_file = os.path.join(args.output_dir, "custom_routing_metrics.csv")
+        os.makedirs(args.output_dir, exist_ok=True)
+        write_header = not os.path.exists(metrics_file)
+        with open(metrics_file, "a", encoding="utf-8") as f:
+            if write_header:
+                f.write("step,tool_json_validity,conv_routing_accuracy\n")
+            f.write(f"{state.global_step},{tool_rate:.4f},{conv_rate:.4f}\n")
+
         if tool_total == 0:
             logger.warning(
                 "[FormatCheck] No apigen samples evaluated — "
