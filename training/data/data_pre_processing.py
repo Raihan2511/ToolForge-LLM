@@ -8,17 +8,13 @@ Original file is located at
 """
 
 # ==========================================
-# COLAB PREPROCESSING PIPELINE
-# APIGen (60k) + UltraChat (40k) → Mixed SFT Dataset
+# LOCAL PREPROCESSING PIPELINE
+# APIGen (80k) + UltraChat (15k) → Mixed SFT Dataset
 # No GPU needed — CPU-only preprocessing
 # ==========================================
 # !pip install datasets transformers -q
 
-# ==========================================
-# 0. MOUNT GOOGLE DRIVE
-# ==========================================
-from google.colab import drive
-drive.mount('/content/drive')
+# Local execution, no drive mount needed
 
 import json
 import random
@@ -27,33 +23,20 @@ from datasets import load_dataset, concatenate_datasets, DatasetDict
 # ==========================================
 # 1. CONFIG — edit only this block
 # ==========================================
-APIGEN_FILE_PATH  = "/content/drive/MyDrive/retail_llm/xlam_function_calling_60k.json"
 APIGEN_LIMIT      = 60_000
 ULTRACHAT_LIMIT   = 40_000
 VAL_RATIO         = 0.02      # 2% → ~2k val samples
 SEED              = 42
-SAVE_DIR          = "/content/drive/MyDrive/toolcall_mixed_dataset"
+SAVE_DIR          = r"C:\Users\raiha\OneDrive\Desktop\Msc_proj\ToolForge LLM\dataset"
 
 # ==========================================
 # 2. SYSTEM PROMPTS & INSTRUCTION POOL
 # ==========================================
 
 TASK_INSTRUCTIONS = [
-    "You are a helpful assistant with access to external tools. Use them when necessary to answer the user's request.",
-    "As an AI agent, evaluate the user's query and decide whether to call a tool or provide a direct conversational response.",
-    "You have access to a set of functions. If the user's question requires real-world data or computation, execute the appropriate function.",
-    "Determine if the provided tools can help fulfill the user's prompt. If so, generate the correct tool calls; otherwise, reply naturally.",
-    "You are an expert function-calling AI. Compose the necessary tool calls to solve the user's problem. If no tools are relevant, state that clearly.",
-    "Analyze the available APIs. If one or more APIs are needed to answer the query, format the tool calls correctly. If not, converse normally.",
-    "Your objective is to assist the user by utilizing the provided tools whenever applicable. Parallel tool calls are allowed if multiple actions are needed concurrently.",
-    "Act as a smart assistant. Use the supplied functions to gather information or perform actions required by the user.",
-    "Review the user input and the list of functions. Trigger the relevant functions with valid JSON arguments if they match the user's intent.",
-    "You are an AI designed to interface with external APIs. When asked a question, check your toolset first. If a tool is a match, use it.",
-    "Provide a helpful response. If the query requires factual lookup or specific operations supported by your tools, formulate the required tool calls.",
-    "You are equipped with specialized tools. Decide if the user's command requires tool execution. If it does, output the precise function calls.",
-    "Assess the user's request against the available functions. Execute parallel tool calls if the task demands multiple concurrent actions.",
-    "You are a conversational AI with function-calling capabilities. Seamlessly integrate tool usage into your reasoning when needed to assist the user.",
-    "Utilize the provided tools to construct a comprehensive answer. If the query is a simple greeting or general question, ignore the tools and respond conversationally."
+    "You are a helpful AI assistant with access to tools.",
+    "Use available tools when required to answer the user.",
+    "Call functions when necessary, otherwise respond naturally.",
 ]
 
 FORMAT_INSTRUCTION_BLOCK = """[BEGIN OF FORMAT INSTRUCTION]
@@ -198,10 +181,8 @@ def process_ultrachat(example):
         if "as an ai language model" in content.lower():
             return {"conversation": [], "source": "ultrachat"}
 
-    task_instruction = random.choice(TASK_INSTRUCTIONS)
-    system_content   = SYSTEM_PROMPT_TEMPLATE.format(
-        task_instruction=task_instruction,
-        formatted_tools="[]",        # Empty tools → negative sample
+    system_content = (
+        "You are a helpful, natural, and friendly AI assistant."
     )
 
     conversation = [{"role": "system", "content": system_content}]
@@ -220,12 +201,16 @@ def process_ultrachat(example):
 # ==========================================
 # 4. LOAD DATASETS
 # ==========================================
-print("Loading APIGen from Google Drive...")
-apigen_raw = load_dataset(
-    "json",
-    data_files=APIGEN_FILE_PATH,
-    split=f"train[:{APIGEN_LIMIT}]"
-)
+print("Loading APIGen from HuggingFace...")
+try:
+    apigen_raw = load_dataset(
+        "Salesforce/xlam-function-calling-60k",
+        split=f"train[:{APIGEN_LIMIT}]",
+        token=""
+    )
+except Exception as e:
+    print(f"Failed to load directly, make sure internet is connected. Error: {e}")
+    raise
 print(f"  Loaded {len(apigen_raw):,} raw APIGen rows")
 
 print("Loading UltraChat 200k (sampling 40k from train_sft)...")
@@ -300,8 +285,9 @@ dataset_dict.save_to_disk(SAVE_DIR)
 
 # JSONL format — portable, works directly on RunPod without HF datasets config
 for split_name in ["train", "val"]:
-    out_path = f"{SAVE_DIR}/{split_name}.jsonl"
-    with open(out_path, "w") as f:
+    out_name = f"new_{split_name}.jsonl"
+    out_path = f"{SAVE_DIR}/{out_name}"
+    with open(out_path, "w", encoding="utf-8") as f:
         for row in dataset_dict[split_name]:
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
     print(f"  Saved {split_name}.jsonl  ({len(dataset_dict[split_name]):,} rows)")
@@ -326,8 +312,8 @@ for turn in ultrachat_sample["conversation"]:
     preview = turn["content"][:300].replace("\n", " ")
     print(f"\n[{turn['role'].upper()}]\n{preview}...")
 
-print("\n✅ Done. Dataset saved to Google Drive.")
+print("\n✅ Done. Dataset saved to local directory.")
 print(f"   HF format  : {SAVE_DIR}/")
-print(f"   JSONL train: {SAVE_DIR}/train.jsonl")
-print(f"   JSONL val  : {SAVE_DIR}/val.jsonl")
+print(f"   JSONL train: {SAVE_DIR}/new_train.jsonl")
+print(f"   JSONL val  : {SAVE_DIR}/new_val.jsonl")
 

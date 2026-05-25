@@ -325,9 +325,23 @@ def interactive_loop() -> None:
             print("\nGoodbye!")
             break
 
-        # To test chitchat, we pass tools=None. To test tools, pass tools=TOOLS.
-        # Let's default to no tools so you can test your "hi" message right now!
-        payload = build_payload(system_prompt, user_input, tools=None)
+        tool_keywords = [
+            "weather",
+            "stock",
+            "price",
+            "temperature",
+        ]
+
+        use_tools = any(
+            kw in user_input.lower()
+            for kw in tool_keywords
+        )
+
+        payload = build_payload(
+            system_prompt,
+            user_input,
+            tools=TOOLS if use_tools else None,
+        )
 
         try:
             response = client.chat.completions.create(**payload)
