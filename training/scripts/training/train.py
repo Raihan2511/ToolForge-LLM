@@ -75,8 +75,8 @@ def load_config(path: str) -> dict:
     # TRAINING_ROOT to override (e.g. TRAINING_ROOT=~/training).
     training_root = os.environ.get("TRAINING_ROOT", "/workspace/training")
 
-    cfg["data"]["train_file"]      = os.path.join(training_root, "data", "train.jsonl")
-    cfg["data"]["val_file"]        = os.path.join(training_root, "data", "val.jsonl")
+    cfg["data"]["train_file"]      = os.path.join(training_root, "data", "new_train.jsonl")
+    cfg["data"]["val_file"]        = os.path.join(training_root, "data", "new_val.jsonl")
     cfg["training"]["output_dir"]  = os.path.join(
         training_root, "runs", "qwen7b_unsloth"
     )
