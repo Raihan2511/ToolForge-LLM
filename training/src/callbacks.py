@@ -151,12 +151,12 @@ class FormatCollapseCallback(TrainerCallback):
         try:
             self.model.eval()
             logger.info("[FormatCheck] ✅ model.eval() — running format checks")
-            self._run_checks(state)
+            self._run_checks(state, args)
         finally:
             self.model.train()
             logger.info("[FormatCheck] 🔄 Switched back to train mode")
 
-    def _run_checks(self, state: TrainerState) -> None:
+    def _run_checks(self, state: TrainerState, args: TrainingArguments) -> None:
         tool_ok, tool_total = 0, 0
         conv_ok, conv_total = 0, 0
 
