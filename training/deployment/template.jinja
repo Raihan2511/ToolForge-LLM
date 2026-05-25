@@ -20,6 +20,7 @@
 {%- if not loop.first %}
 {% endif -%}
 {%- if message['role'] == 'system' -%}
+{%- if tools is defined and tools is not none and tools | length > 0 -%}
 <|im_start|>system
 [BEGIN OF TASK INSTRUCTION]
 {{ message['content'] }}
@@ -32,6 +33,10 @@
 [BEGIN OF FORMAT INSTRUCTION]
 {{ format_instruction }}
 [END OF FORMAT INSTRUCTION]<|im_end|>
+{%- else -%}
+<|im_start|>system
+{{ message['content'] }}<|im_end|>
+{%- endif -%}
 {%- elif message['role'] == 'user' -%}
 <|im_start|>user
 {{ message['content'] }}<|im_end|>
