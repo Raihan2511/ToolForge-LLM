@@ -10,8 +10,16 @@ def plot_metrics(run_dir):
     output_image = os.path.join(run_dir, "training_metrics.png")
 
     if not os.path.exists(trainer_state_file):
-        print(f"Error: Could not find {trainer_state_file}")
+        # HF doesn't always save it to root; check for the latest checkpoint folder
+        checkpoints = [d for d in os.listdir(run_dir) if d.startswith("checkpoint-")]
+        if checkpoints:
+            latest_ckpt = sorted(checkpoints, key=lambda x: int(x.split("-")[1]))[-1]
+            trainer_state_file = os.path.join(run_dir, latest_ckpt, "trainer_state.json")
+
+    if not os.path.exists(trainer_state_file):
+        print(f"Error: Could not find trainer_state.json in {run_dir} or its checkpoints.")
         return
+
 
     # Parse HF trainer state
     with open(trainer_state_file, "r") as f:
