@@ -591,12 +591,12 @@ def _match_single_call(predicted: dict, expected: dict) -> tuple[bool, str]:
         if isinstance(pred_val, str):
             try:
                 safe_pred = ast.literal_eval(pred_val)
-            except (ValueError, SyntaxError):
+            except Exception:
                 safe_pred = pred_val
         if isinstance(exp_val, str):
             try:
                 safe_exp = ast.literal_eval(exp_val)
-            except (ValueError, SyntaxError):
+            except Exception:
                 safe_exp = exp_val
 
         if not _values_match(safe_pred, safe_exp):
