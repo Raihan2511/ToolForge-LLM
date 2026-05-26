@@ -25,7 +25,7 @@ from openai import OpenAI
 
 # --------------- Configuration ---------------
 
-VLLM_BASE_URL: str = os.getenv("VLLM_BASE_URL", "https://jackie-instantly-musician-styles.trycloudflare.com/v1")
+VLLM_BASE_URL: str = os.getenv("VLLM_BASE_URL", "https://officers-lover-sending-architects.trycloudflare.com/v1")
 MODEL_NAME: str = os.getenv("VLLM_MODEL_NAME", "qwen-tools")
 
 # --------------- System Prompt ---------------
@@ -262,7 +262,7 @@ def run_tests(*, dry_run: bool = False) -> None:
         print(f"  Input: \"{test['input']}\"")
         print("-" * 60)
 
-        payload = build_payload(system_prompt, test["input"])
+        payload = build_payload(system_prompt, test["input"], tools=TOOLS)
 
         # ── Print raw JSON payload ──
         print("\n  > Raw JSON payload being sent:\n")
@@ -325,22 +325,10 @@ def interactive_loop() -> None:
             print("\nGoodbye!")
             break
 
-        tool_keywords = [
-            "weather",
-            "stock",
-            "price",
-            "temperature",
-        ]
-
-        use_tools = any(
-            kw in user_input.lower()
-            for kw in tool_keywords
-        )
-
         payload = build_payload(
             system_prompt,
             user_input,
-            tools=TOOLS if use_tools else None,
+            tools=TOOLS,
         )
 
         try:

@@ -8,7 +8,7 @@
     - messages : list[dict]  (role / content)
     - tools    : list[dict] | None  (OpenAI-format tool definitions)
 -#}
-{%- set format_instruction = 'Output MUST be a JSON object with a "tool_calls" key. No other text.\nIf no call is needed, set tool_calls to an empty list.\nExample:\n{"tool_calls": [{"name": "func_name", "arguments": {"arg1": "val1"}}]}' -%}
+{%- set format_instruction = 'If a tool is needed, output ONLY a JSON object with a "tool_calls" key and nothing else.\nIf no tool is needed (e.g. greetings, general questions, chit-chat), respond naturally in plain text — do NOT output JSON.\nExample tool call:\n{"tool_calls": [{"name": "func_name", "arguments": {"arg1": "val1"}}]}' -%}
 
 {%- if tools is defined and tools is not none and tools | length > 0 -%}
 {%- set tools_json = tools | tojson(indent=2) -%}
